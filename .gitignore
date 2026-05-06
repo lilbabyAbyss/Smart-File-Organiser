@@ -4,6 +4,6 @@ settings.json
 __pycache__/
 *.pyc
 .env
-/temp_uploads
-/static
-/templates
+static/
+templates/
+__pycache__/
