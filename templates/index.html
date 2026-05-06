@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>File Organiser</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+
+  <body class="{% if settings.toggles.dark_mode %}dark{% endif %}">
+    <!-- ================= NAVBAR ================= -->
+    <header class="navbar">
+      <div class="logo">Smart File Organiser</div>
+
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/help">Help</a>
+        <a href="/logs">Logs</a>
+        <a href="/settings">Settings</a>
+
+        {% if session.get("user") %}
+        <span class="user-badge">👤 {{ session.get("user") }}</span>
+        <a href="/logout" class="login-btn">Logout</a>
+        {% else %}
+        <a href="/auth?mode=login" class="login-btn">Login</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <div class="page">
+      <div class="card">
+        <!-- ================= PREVIEW MODE ================= -->
+        {% if preview_mode %}
+
+        <h2>Preview Structure</h2>
+
+        <div class="folder-grid">
+          {% for folder, files in preview_structure.items() %}
+          <div class="folder-card">
+            <div class="folder-title">📁 {{ folder }}</div>
+
+            <div class="file-list">
+              {% for f in files %}
+              <div class="file-item">📄 {{ f }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <form method="POST" action="/confirm/{{ job_id }}">
+          <button class="btn-primary" type="submit">Confirm & Download</button>
+        </form>
+
+        <br />
+        <a href="/">Cancel</a>
+
+        <!-- ================= CONFIRM ONLY ================= -->
+        {% elif confirm_only %}
+
+        <h2>Confirm Organising</h2>
+        <br />
+        <p>Preview is disabled. Click below to organise your files.</p>
+
+        <form method="POST" action="/confirm/{{ job_id }}">
+          <button class="btn-primary" type="submit">Confirm & Download</button>
+        </form>
+
+        <br />
+        <a href="/">Cancel</a>
+
+        <!-- ================= UPLOAD MODE ================= -->
+        {% else %}
+
+        <h2>Upload Files</h2>
+
+        <form id="uploadForm" method="POST" enctype="multipart/form-data">
+          <div class="drop-zone">
+            <p>Drag & drop files or click to select</p>
+            <input type="file" name="files" multiple required />
+          </div>
+
+          <button class="btn-primary" type="submit">Organise Files</button>
+        </form>
+
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ================= LOADING OVERLAY ================= -->
+    <div id="loading" class="loading-overlay hidden">
+      <div class="loading-card">
+        <div class="spinner"></div>
+        <h3>Processing files...</h3>
+        <p>Please wait...</p>
+      </div>
+    </div>
+
+    {% if error %}
+    <div class="error-box">
+      <center>{{ error }}</center>
+    </div>
+    {% endif %}
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+      const form = document.getElementById("uploadForm");
+      const loading = document.getElementById("loading");
+
+      let loadingActive = false;
+
+      if (form) {
+        form.addEventListener("submit", () => {
+          loadingActive = true;
+          loading.classList.remove("hidden");
+
+          // backup safety (prevents infinite lock)
+          setTimeout(() => {
+            loading.classList.add("hidden");
+            loadingActive = false;
+          }, 15000);
+        });
+      }
+
+      window.addEventListener("focus", () => {
+        if (loadingActive) {
+          loading.classList.add("hidden");
+          loadingActive = false;
+        }
+      });
+
+      window.addEventListener("pageshow", () => {
+        loading.classList.add("hidden");
+        loadingActive = false;
+      });
+    </script>
+  </body>
+</html>

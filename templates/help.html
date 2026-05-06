@@ -1,0 +1,232 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Help Center – Smart File Organiser</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+
+  <body
+    class="{% if settings.toggles.dark_mode %}dark{% endif %} {% if not settings.toggles.animations %}no-anim{% endif %}"
+  >
+    <!-- NAVBAR (your existing one) -->
+    <header class="navbar">
+      <div class="logo">Smart File Organiser</div>
+
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/help">Help</a>
+        <a href="/logs">Logs</a>
+        <a href="/settings">Settings</a>
+
+        {% if session.get("user") %}
+        <span class="user-badge">👤 {{ session.get("user") }}</span>
+        <a href="/logout" class="login-btn">Logout</a>
+        {% else %}
+        <a href="/auth?mode=login" class="login-btn">Login</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <h1>Help Center</h1>
+      <p class="subtitle">Everything you need to use Smart File Organiser</p>
+    </section>
+
+    <div class="page">
+      <div class="card help-card">
+        <!-- QUICK ACTIONS -->
+        <div class="help-grid">
+          <div class="help-box" onclick="openVideo()">
+            <div class="help-icon">🎥</div>
+            <h3>Video Tutorial</h3>
+            <p>Watch a 2-minute walkthrough of how the organiser works.</p>
+          </div>
+
+          <div class="help-box" onclick="openDocs()">
+            <div class="help-icon">📘</div>
+            <h3>Documentation</h3>
+            <p>Learn how files are sorted and how ZIP downloads work.</p>
+          </div>
+
+          <div class="help-box" onclick="quickStart()">
+            <div class="help-icon">⚡</div>
+            <h3>Quick Start</h3>
+            <p>Upload a few sample files to see instant sorting.</p>
+          </div>
+        </div>
+
+        <!-- STEP BY STEP -->
+        <h2 class="section-title">How It Works</h2>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div>
+              <h4>Upload Your Files</h4>
+              <p>
+                Drag & drop files into the upload box or click to select them.
+              </p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">2</div>
+            <div>
+              <h4>Click “Organise Files”</h4>
+              <p>
+                The organiser automatically detects file types and sorts them.
+              </p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">3</div>
+            <div>
+              <h4>Wait for Processing</h4>
+              <p>
+                You may see a confirmation box if multiple files are being
+                sorted.
+              </p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">4</div>
+            <div>
+              <h4>Download Your ZIP</h4>
+              <p>
+                Your sorted files are returned as a ZIP containing folders like
+                <strong>TextFiles</strong>, <strong>PythonFiles</strong>, and
+                <strong>OtherFiles</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <h2 class="section-title">Frequently Asked Questions</h2>
+
+        <div class="faq">
+          <details>
+            <summary>What file types are supported?</summary>
+            <p>
+              All common file types including .txt, .py, .pdf, .jpg, .docx, .zip
+              and more.
+            </p>
+          </details>
+
+          <details>
+            <summary>Can I undo the organisation?</summary>
+            <p>
+              Yes — your original files are never modified. You simply receive a
+              ZIP copy.
+            </p>
+          </details>
+
+          <details>
+            <summary>Does it organise subfolders?</summary>
+            <p>
+              No — only the files you upload are sorted. Subfolder scanning is
+              not used.
+            </p>
+          </details>
+
+          <details>
+            <summary>Is my data safe?</summary>
+            <p>
+              All processing happens locally on your machine. No files are
+              uploaded to any server.
+            </p>
+          </details>
+        </div>
+
+        <!-- COMMON ISSUES -->
+        <h2 class="section-title">Common Issues</h2>
+
+        <div class="issues">
+          <div class="issue">
+            <h4>“Nothing happens when I click Organise Files”</h4>
+            <p>Ensure your Flask server is running and refresh the page.</p>
+          </div>
+
+          <div class="issue">
+            <h4>“The ZIP is empty”</h4>
+            <p>Make sure you uploaded at least one file before submitting.</p>
+          </div>
+
+          <div class="issue">
+            <h4>“Some files didn’t sort correctly”</h4>
+            <p>
+              They may be unsupported or have no extension. These go into
+              <strong>OtherFiles</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- HELP MODAL -->
+    <div id="helpModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">✕</span>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+    <script>
+      function openModal(content) {
+        document.getElementById("helpModal").classList.remove("hidden");
+        document.getElementById("modalBody").innerHTML = content;
+      }
+
+      function closeModal() {
+        document.getElementById("helpModal").classList.add("hidden");
+      }
+
+      /* =========================
+   VIDEO (placeholder)
+========================= */
+      function openVideo() {
+        openModal(`
+    <h2>Video Tutorial</h2>
+    <p>Video will be added here soon.</p>
+  `);
+      }
+
+      /* =========================
+   DOCUMENTATION
+========================= */
+      function openDocs() {
+        openModal(`
+    <h2>Documentation</h2>
+    <p><strong>Smart File Organiser</strong> sorts files based on extension rules.</p>
+
+    <ul>
+      <li>Images → Images folder</li>
+      <li>Code → CodeFiles folder</li>
+      <li>Docs → Documents folder</li>
+      <li>Unknown → OtherFiles</li>
+    </ul>
+
+    <p>Files are never modified — only moved into a ZIP output.</p>
+  `);
+      }
+
+      /* =========================
+   QUICK START
+========================= */
+      function quickStart() {
+        openModal(`
+    <h2>Quick Start</h2>
+    <ol>
+      <li>Go to Home page</li>
+      <li>Upload files</li>
+      <li>Click "Organise Files"</li>
+      <li>Download ZIP result</li>
+    </ol>
+
+    <p>Tip: Try uploading mixed file types for best results.</p>
+  `);
+      }
+    </script>
+  </body>
+</html>

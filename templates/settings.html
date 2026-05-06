@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Settings & Preferences</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='settings.css') }}"
+    />
+  </head>
+
+  <body class="{% if settings.toggles.dark_mode %}dark{% endif %}">
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="logo">Smart File Organiser</div>
+
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/help">Help</a>
+        <a href="/logs">Logs</a>
+        <a href="/settings">Settings</a>
+
+        {% if session.get("user") %}
+        <span class="user-badge">👤 {{ session.get("user") }}</span>
+        <a href="/logout" class="login-btn">Logout</a>
+        {% else %}
+        <a href="/auth?mode=login" class="login-btn">Login</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="settings-container">
+      <div class="settings-header">
+        <div>
+          <h1>Settings & Preferences</h1>
+          <p class="subtitle">
+            Customize how Smart File Organiser works for you.
+          </p>
+        </div>
+
+        <div class="settings-actions">
+          <button class="reset-btn" type="button" onclick="resetSettings()">
+            Reset
+          </button>
+          <button class="save-btn" form="settingsForm">Save Changes</button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active">Behaviour</button>
+        <button class="tab">Organisation</button>
+        <button class="tab">Appearance</button>
+      </div>
+
+      <!-- SETTINGS FORM -->
+      <form id="settingsForm" method="POST">
+        <!-- BEHAVIOUR -->
+        <div class="settings-section">
+          <h2>Behaviour</h2>
+          <p class="section-desc">Control how the organiser behaves.</p>
+
+          {% macro toggle_row(title, desc, name, value=false) %}
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>{{ title }}</strong>
+              <p class="setting-desc">{{ desc }}</p>
+            </div>
+
+            <label class="switch">
+              <input
+                type="checkbox"
+                name="{{ name }}"
+                {%
+                if
+                value
+                %}checked{%
+                endif
+                %}
+              />
+              <span class="slider"></span>
+            </label>
+          </div>
+          {% endmacro %} {{ toggle_row( "Preview file structure", "Show how
+          files will be organised before processing.", "preview",
+          settings.toggles.preview ) }} {{ toggle_row( "Confirm before
+          organising", "Ask before processing files.", "confirm",
+          settings.toggles.confirm ) }}
+          <br />
+          <label>
+
+          <div class="setting-group">
+            <h2>Upload Limit</h2>
+          <p class="section-desc">Set a limit on the amount of MB you would like to allow the system to organise.</p>
+            <label>Max upload size (MB):</label>
+            <input
+              type="number"
+              name="max_upload_mb"
+              min="1"
+              max="500"
+              value="{{ settings.limits.max_upload_mb }}"
+            />
+          </div>
+        </div>
+
+        <!-- ORGANISATION RULES (IMPORTANT) -->
+        <div class="settings-section hidden">
+          <h2>Organisation Rules</h2>
+          <p class="section-desc">Define how files are sorted into folders.</p>
+
+          <textarea
+            name="rules"
+            class="rules-box"
+            placeholder="Images: .jpg, .png; Documents: .pdf, .txt"
+          >
+{% if settings.rules %}
+{% for folder, exts in settings.rules.items() %}
+{{ folder }}: {{ exts|join(', ') }};
+{% endfor %}
+{% endif %}
+    </textarea
+          >
+        </div>
+
+        <!-- APPEARANCE -->
+        <div class="settings-section hidden">
+          <h2>Appearance</h2>
+          <p class="section-desc">Visual preferences.</p>
+
+          {{ toggle_row( "Dark Mode", "Use dark theme.", "dark_mode",
+          settings.toggles.dark_mode ) }}
+        </div>
+      </form>
+
+      <footer class="footer">
+        © 2025 Smart File Organiser | Built with Flask & Python
+      </footer>
+    </div>
+
+    <script>
+      const tabs = document.querySelectorAll(".tab");
+      const sections = document.querySelectorAll(".settings-section");
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => {
+          tabs.forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+
+          sections.forEach((s) => s.classList.add("hidden"));
+          sections[index].classList.remove("hidden");
+        });
+      });
+
+      function resetSettings() {
+        document.getElementById("settingsForm").reset();
+      }
+    </script>
+  </body>
+</html>

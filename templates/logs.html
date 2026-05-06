@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Logs</title>
+    <link rel="stylesheet" href="/static/style.css" />
+
+    <style>
+      /* =========================
+   BASE / BACKGROUND FEEL
+========================= */
+      .page {
+        padding: 20px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      /* =========================
+   HEADER TEXT
+========================= */
+      h2 {
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        margin-bottom: 8px;
+      }
+
+      /* =========================
+   FILTER BAR (cleaner layout)
+========================= */
+      .filter-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin: 14px 0 18px;
+      }
+
+      /* =========================
+   SEARCH (modern glass style)
+========================= */
+      .search-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        flex: 1;
+
+        padding: 10px 12px;
+        border-radius: 12px;
+
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        transition: 0.2s ease;
+      }
+
+      .search-box:focus-within {
+        border-color: #4c7dff;
+        box-shadow: 0 0 0 3px rgba(76, 125, 255, 0.12);
+        transform: translateY(-1px);
+      }
+
+      .search-box input {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: inherit;
+        font-size: 14px;
+      }
+
+      .search-icon,
+      .clear-btn {
+        opacity: 0.6;
+        font-size: 14px;
+      }
+
+      .clear-btn {
+        cursor: pointer;
+        transition: 0.15s;
+      }
+
+      .clear-btn:hover {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+
+      /* =========================
+   FILTER PILLS (more modern)
+========================= */
+      .pill-group {
+        display: flex;
+        gap: 8px;
+      }
+
+      .pill {
+        padding: 7px 12px;
+        border-radius: 999px;
+
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+
+        color: inherit;
+        font-size: 13px;
+        cursor: pointer;
+
+        transition: 0.2s ease;
+      }
+
+      .pill:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .pill.active {
+        background: #4c7dff;
+        border-color: #4c7dff;
+        color: white;
+      }
+
+      /* =========================
+   LOG CARDS (cleaner, softer)
+========================= */
+      .log-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .log-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 14px;
+
+        overflow: hidden;
+        transition: 0.2s ease;
+      }
+
+      .log-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+
+      /* =========================
+   HEADER
+========================= */
+      .log-header {
+        padding: 14px 16px;
+        cursor: pointer;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        background: rgba(0, 0, 0, 0.18);
+      }
+
+      .log-title {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-weight: 600;
+      }
+
+      /* badges cleaner */
+      .badge {
+        font-size: 12px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .badge.success {
+        background: rgba(46, 204, 113, 0.2);
+        color: #2ecc71;
+      }
+      .badge.failed {
+        background: rgba(231, 76, 60, 0.2);
+        color: #e74c3c;
+      }
+
+      .expand-btn {
+        font-size: 12px;
+        opacity: 0.7;
+      }
+
+      /* =========================
+   BODY ANIMATION
+========================= */
+      .log-body {
+        max-height: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.35s ease,
+          padding 0.35s ease;
+        padding: 0 16px;
+      }
+
+      .log-body.open {
+        max-height: 600px;
+        padding: 12px 16px;
+      }
+
+      /* =========================
+   FILE ROWS (clean hierarchy)
+========================= */
+      .file-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .file-left {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .file-name {
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .file-reason {
+        font-size: 12px;
+        opacity: 0.6;
+      }
+
+      .status {
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 999px;
+      }
+
+      .status.success {
+        background: rgba(46, 204, 113, 0.15);
+        color: #2ecc71;
+      }
+
+      .status.failed {
+        background: rgba(231, 76, 60, 0.15);
+        color: #e74c3c;
+      }
+    </style>
+  </head>
+
+  <body class="{% if settings.toggles.dark_mode %}dark{% endif %}">
+    <header class="navbar">
+      <div class="logo">Smart File Organiser</div>
+
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/logs">Logs</a>
+        <a href="/settings">Settings</a>
+        {% if session.get("user") %}
+        <span class="user-badge">👤 {{ session.get("user") }}</span>
+        <a href="/logout" class="login-btn">Logout</a>
+        {% else %}
+        <a href="/auth?mode=login" class="login-btn">Login</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    <div class="page">
+      <div class="card">
+        <h2>Activity Logs</h2>
+        <br />
+        <!-- SUMMARY -->
+        <p>
+          Sessions: {{ summary.total }} | Files: {{ summary.files }} | Failed:
+          {{ summary.failed }}
+        </p>
+        <br />
+        <!-- FILTERS -->
+        <div class="filter-bar">
+          <!-- SEARCH -->
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+
+            <input
+              id="search"
+              type="text"
+              placeholder="Search files, reasons, or timestamps..."
+              oninput="filterLogs(currentFilter)"
+            />
+
+            <span class="clear-btn" onclick="clearSearch()">✕</span>
+          </div>
+
+          <!-- STATUS PILLS -->
+          <div class="pill-group">
+            <button class="pill active" onclick="setFilter('all', this)">
+              All
+            </button>
+            <button class="pill" onclick="setFilter('success', this)">
+              ✔ Success
+            </button>
+            <button class="pill" onclick="setFilter('failed', this)">
+              ✖ Failed
+            </button>
+          </div>
+        </div>
+
+        <!-- LOGS -->
+        <div class="log-container">
+          {% for log in logs %}
+          <div class="log-card" data-session>
+            <!-- HEADER -->
+            <div class="log-header" onclick="toggle(this)">
+              <div class="log-title">
+                🕒 {{ log.time }}
+
+                <span class="badge success"> {{ log.success }} </span>
+
+                <span class="badge failed"> {{ log.failed }} </span>
+              </div>
+
+              <div class="expand-btn">Expand ⌄</div>
+            </div>
+
+            <!-- BODY -->
+            <div class="log-body">
+              {% for file in log.files %}
+              <div
+                class="file-row"
+                data-name="{{ file.name }}"
+                data-reason="{{ file.reason }}"
+                data-status="{{ file.status }}"
+              >
+                <div class="file-left">
+                  <div class="file-name">{{ file.name }}</div>
+                  <div class="file-reason">{{ file.reason }}</div>
+                </div>
+
+                <div class="status {{ file.status }}">{{ file.status }}</div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentFilter = "all";
+
+      function setFilter(type, el) {
+        currentFilter = type;
+
+        document
+          .querySelectorAll(".pill")
+          .forEach((p) => p.classList.remove("active"));
+        el.classList.add("active");
+
+        filterLogs(currentFilter);
+      }
+
+      function toggle(el) {
+        const body = el.nextElementSibling; // get the log-body
+        const btn = el.querySelector(".expand-btn");
+
+        if (!body) return;
+
+        body.classList.toggle("open");
+
+        btn.innerText = body.classList.contains("open")
+          ? "Collapse ⌃"
+          : "Expand ⌄";
+      }
+
+      /* ---------------- LIVE FILTER ---------------- */
+      function filterLogs(activeStatus = "all") {
+        const search = document.getElementById("search").value.toLowerCase();
+
+        document.querySelectorAll(".log-card").forEach((card) => {
+          let sessionHasVisibleFiles = false;
+
+          card.querySelectorAll(".file-row").forEach((row) => {
+            const name = row.dataset.name.toLowerCase();
+            const reason = row.dataset.reason.toLowerCase();
+            const status = row.dataset.status;
+
+            const matchesSearch =
+              search === "" || name.includes(search) || reason.includes(search);
+
+            const matchesStatus =
+              activeStatus === "all" || activeStatus === status;
+
+            const show = matchesSearch && matchesStatus;
+
+            row.style.display = show ? "flex" : "none";
+
+            if (show) sessionHasVisibleFiles = true;
+          });
+
+          // IMPORTANT FIX: only hide session if no files match
+          card.style.display = sessionHasVisibleFiles ? "block" : "none";
+        });
+      }
+    </script>
+  </body>
+</html>
