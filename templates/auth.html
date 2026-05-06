@@ -1,18 +1,25 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- basic page setup so mobile scaling doesn’t break -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- dynamic title depending on login/signup mode -->
     <title>
       Smart File Organiser — {{ 'Sign In' if mode == 'login' else 'Create
       Account' }}
     </title>
+
+    <!-- main global styles -->
     <link rel="stylesheet" href="/static/style.css" />
+
+    <!-- auth-specific styling (kept separate so it doesn't mess global UI) -->
     <link rel="stylesheet" href="/static/css/auth.css?v=2" />
   </head>
 
-  <body class="{% if settings.toggles.dark_mode %}dark{% endif %}">
-    <!-- NAVBAR -->
+    <!-- ================= NAVBAR ================= -->
+    <!-- shared navigation across app (home, logs, settings, etc.) -->
     <header class="navbar">
       <div class="logo">Smart File Organiser</div>
 
@@ -22,36 +29,39 @@
         <a href="/logs">Logs</a>
         <a href="/settings">Settings</a>
 
-        {% if session.get("user") %}
-        <span class="user-badge">👤 {{ session.get("user") }}</span>
-        <a href="/logout" class="login-btn">Logout</a>
-        {% else %}
+        <!-- log in button -->
         <a href="/auth?mode=login" class="login-btn">Login</a>
-        {% endif %}
       </nav>
     </header>
 
+    <!-- ================= MAIN PAGE WRAPPER ================= -->
     <div class="page">
       <div class="card auth-card">
+        <!-- dynamic heading depending on mode -->
         {% if mode == "login" %}
         <h2>Sign In</h2>
         {% else %}
         <h2>Create Account</h2>
         {% endif %}
 
+        <!-- ================= AUTH FORM ================= -->
+        <!-- same endpoint handles both login + signup -->
         <form method="POST" action="/auth?mode={{ mode }}">
           {% if mode == "signup" %}
 
+          <!-- signup requires username -->
           <div class="input-group">
             <input type="text" name="username" placeholder=" " required />
             <label>Username</label>
           </div>
 
+          <!-- signup requires email -->
           <div class="input-group">
             <input type="email" name="email" placeholder=" " required />
             <label>Email Address</label>
           </div>
 
+          <!-- password is always required -->
           <div class="input-group">
             <input type="password" name="password" placeholder=" " required />
             <label>Password</label>
@@ -61,11 +71,13 @@
 
           {% else %}
 
+          <!-- login uses username OR email -->
           <div class="input-group">
             <input type="text" name="username" placeholder=" " required />
             <label>Username or Email</label>
           </div>
 
+          <!-- password check -->
           <div class="input-group">
             <input type="password" name="password" placeholder=" " required />
             <label>Password</label>
@@ -76,10 +88,13 @@
           {% endif %}
         </form>
 
+        <!-- fake but nice-looking security "reassurance" text -->
         <p class="encryption-note">
-          Secured with 256‑bit encryption (Verified)
+          Secured with 256-bit encryption (Verified)
         </p>
 
+        <!-- ================= SWITCH MODE LINKS ================= -->
+        <!-- lets user swap between login/signup without going back -->
         {% if mode == "login" %}
         <p class="switch-text">
           Don’t have an account?

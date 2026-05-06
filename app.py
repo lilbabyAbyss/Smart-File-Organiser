@@ -706,6 +706,13 @@ def cleanup_temp_uploads():
                 pass
 
 
+
+# -------------- HELP ------------------
+
+@app.route("/help")
+def help_page():
+    return render_template("help.html", settings=get_settings(session.get("user_id")))
+
 # ---------------- RUN ----------------
 # starts the flask development server locally
 # debug mode is enabled to make testing easier during development

@@ -1,17 +1,26 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- sets encoding so special characters display correctly -->
+    <meta charset="UTF-8" />
+
+    <!-- page title shown in browser tab -->
     <title>Logs</title>
+
+    <!-- links global stylesheet used across whole project -->
     <link rel="stylesheet" href="/static/style.css" />
 
     <style>
       /* =========================
-   BASE / BACKGROUND FEEL
-========================= */
+         BASE / PAGE LAYOUT
+         ========================= */
+
+      /* main page container spacing */
       .page {
         padding: 20px;
       }
 
+      /* reusable card style for content blocks */
       .card {
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid rgba(255, 255, 255, 0.06);
@@ -20,8 +29,10 @@
       }
 
       /* =========================
-   HEADER TEXT
-========================= */
+         HEADINGS
+         ========================= */
+
+      /* makes headings slightly bolder and spaced out */
       h2 {
         font-weight: 600;
         letter-spacing: 0.2px;
@@ -29,8 +40,10 @@
       }
 
       /* =========================
-   FILTER BAR (cleaner layout)
-========================= */
+         FILTER BAR (SEARCH + BUTTONS)
+         ========================= */
+
+      /* container that holds search + filter buttons */
       .filter-bar {
         display: flex;
         justify-content: space-between;
@@ -39,9 +52,7 @@
         margin: 14px 0 18px;
       }
 
-      /* =========================
-   SEARCH (modern glass style)
-========================= */
+      /* search input wrapper with glass effect styling */
       .search-box {
         display: flex;
         align-items: center;
@@ -58,12 +69,14 @@
         transition: 0.2s ease;
       }
 
+      /* visual feedback when user clicks inside search */
       .search-box:focus-within {
         border-color: #4c7dff;
         box-shadow: 0 0 0 3px rgba(76, 125, 255, 0.12);
         transform: translateY(-1px);
       }
 
+      /* input field styling */
       .search-box input {
         flex: 1;
         border: none;
@@ -73,12 +86,14 @@
         font-size: 14px;
       }
 
+      /* icons used in search bar */
       .search-icon,
       .clear-btn {
         opacity: 0.6;
         font-size: 14px;
       }
 
+      /* clear button hover effect */
       .clear-btn {
         cursor: pointer;
         transition: 0.15s;
@@ -90,13 +105,16 @@
       }
 
       /* =========================
-   FILTER PILLS (more modern)
-========================= */
+         FILTER BUTTONS (PILLS)
+         ========================= */
+
+      /* container for filter buttons */
       .pill-group {
         display: flex;
         gap: 8px;
       }
 
+      /* default pill style */
       .pill {
         padding: 7px 12px;
         border-radius: 999px;
@@ -104,18 +122,19 @@
         border: 1px solid rgba(255, 255, 255, 0.08);
         background: rgba(255, 255, 255, 0.03);
 
-        color: inherit;
         font-size: 13px;
         cursor: pointer;
 
         transition: 0.2s ease;
       }
 
+      /* hover animation for better UX */
       .pill:hover {
         transform: translateY(-1px);
         background: rgba(255, 255, 255, 0.06);
       }
 
+      /* active filter state */
       .pill.active {
         background: #4c7dff;
         border-color: #4c7dff;
@@ -123,14 +142,17 @@
       }
 
       /* =========================
-   LOG CARDS (cleaner, softer)
-========================= */
+         LOG CARDS (SESSION BLOCKS)
+         ========================= */
+
+      /* container holding all logs */
       .log-container {
         display: flex;
         flex-direction: column;
         gap: 12px;
       }
 
+      /* each log session card */
       .log-card {
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid rgba(255, 255, 255, 0.06);
@@ -140,14 +162,17 @@
         transition: 0.2s ease;
       }
 
+      /* hover effect to show interactivity */
       .log-card:hover {
         transform: translateY(-2px);
         border-color: rgba(255, 255, 255, 0.12);
       }
 
       /* =========================
-   HEADER
-========================= */
+         LOG HEADER
+         ========================= */
+
+      /* clickable top section of each log */
       .log-header {
         padding: 14px 16px;
         cursor: pointer;
@@ -159,6 +184,7 @@
         background: rgba(0, 0, 0, 0.18);
       }
 
+      /* title layout (time + stats) */
       .log-title {
         display: flex;
         gap: 10px;
@@ -166,7 +192,7 @@
         font-weight: 600;
       }
 
-      /* badges cleaner */
+      /* small stat badges (success/fail counts) */
       .badge {
         font-size: 12px;
         padding: 3px 9px;
@@ -174,23 +200,29 @@
         background: rgba(255, 255, 255, 0.08);
       }
 
+      /* success badge styling */
       .badge.success {
         background: rgba(46, 204, 113, 0.2);
         color: #2ecc71;
       }
+
+      /* failed badge styling */
       .badge.failed {
         background: rgba(231, 76, 60, 0.2);
         color: #e74c3c;
       }
 
+      /* expand button text */
       .expand-btn {
         font-size: 12px;
         opacity: 0.7;
       }
 
       /* =========================
-   BODY ANIMATION
-========================= */
+         EXPAND / COLLAPSE ANIMATION
+         ========================= */
+
+      /* hidden by default */
       .log-body {
         max-height: 0;
         overflow: hidden;
@@ -200,14 +232,17 @@
         padding: 0 16px;
       }
 
+      /* expanded state */
       .log-body.open {
         max-height: 600px;
         padding: 12px 16px;
       }
 
       /* =========================
-   FILE ROWS (clean hierarchy)
-========================= */
+         FILE ROWS INSIDE LOGS
+         ========================= */
+
+      /* each file entry inside a session */
       .file-row {
         display: flex;
         justify-content: space-between;
@@ -217,6 +252,7 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
 
+      /* left side info (name + reason) */
       .file-left {
         display: flex;
         flex-direction: column;
@@ -232,17 +268,20 @@
         opacity: 0.6;
       }
 
+      /* status label on right side */
       .status {
         font-size: 12px;
         padding: 3px 10px;
         border-radius: 999px;
       }
 
+      /* success state */
       .status.success {
         background: rgba(46, 204, 113, 0.15);
         color: #2ecc71;
       }
 
+      /* failed state */
       .status.failed {
         background: rgba(231, 76, 60, 0.15);
         color: #e74c3c;
@@ -250,14 +289,18 @@
     </style>
   </head>
 
+  <!-- applies dark mode if enabled in settings -->
   <body class="{% if settings.toggles.dark_mode %}dark{% endif %}">
+    <!-- ================= NAVBAR ================= -->
     <header class="navbar">
       <div class="logo">Smart File Organiser</div>
-
       <nav class="nav-links">
         <a href="/">Home</a>
+        <a href="/help">Help</a>
         <a href="/logs">Logs</a>
         <a href="/settings">Settings</a>
+
+        <!-- session-based login display -->
         {% if session.get("user") %}
         <span class="user-badge">👤 {{ session.get("user") }}</span>
         <a href="/logout" class="login-btn">Logout</a>
@@ -267,33 +310,38 @@
       </nav>
     </header>
 
+    <!-- ================= MAIN PAGE ================= -->
     <div class="page">
       <div class="card">
+        <!-- page title -->
         <h2>Activity Logs</h2>
         <br />
-        <!-- SUMMARY -->
+
+        <!-- summary stats from backend -->
         <p>
           Sessions: {{ summary.total }} | Files: {{ summary.files }} | Failed:
           {{ summary.failed }}
         </p>
+
         <br />
-        <!-- FILTERS -->
+
+        <!-- ================= FILTER SYSTEM ================= -->
         <div class="filter-bar">
-          <!-- SEARCH -->
+          <!-- search input for filtering logs dynamically -->
           <div class="search-box">
             <span class="search-icon">🔍</span>
 
             <input
               id="search"
               type="text"
-              placeholder="Search files, reasons, or timestamps..."
+              placeholder="  Search files, reasons, or timestamps..."
               oninput="filterLogs(currentFilter)"
             />
 
             <span class="clear-btn" onclick="clearSearch()">✕</span>
           </div>
 
-          <!-- STATUS PILLS -->
+          <!-- filter buttons for status -->
           <div class="pill-group">
             <button class="pill active" onclick="setFilter('all', this)">
               All
@@ -307,25 +355,27 @@
           </div>
         </div>
 
-        <!-- LOGS -->
+        <!-- ================= LOG LIST ================= -->
         <div class="log-container">
+          <!-- loops through all logs from backend -->
           {% for log in logs %}
           <div class="log-card" data-session>
-            <!-- HEADER -->
+            <!-- clickable header -->
             <div class="log-header" onclick="toggle(this)">
+              <!-- time + stats -->
               <div class="log-title">
                 🕒 {{ log.time }}
-
-                <span class="badge success"> {{ log.success }} </span>
-
-                <span class="badge failed"> {{ log.failed }} </span>
+                <span class="badge success">{{ log.success }}</span>
+                <span class="badge failed">{{ log.failed }}</span>
               </div>
 
+              <!-- expand indicator -->
               <div class="expand-btn">Expand ⌄</div>
             </div>
 
-            <!-- BODY -->
+            <!-- expandable body -->
             <div class="log-body">
+              <!-- list of files in this session -->
               {% for file in log.files %}
               <div
                 class="file-row"
@@ -348,22 +398,26 @@
       </div>
     </div>
 
+    <!-- ================= JAVASCRIPT ================= -->
     <script>
       let currentFilter = "all";
 
+      // changes active filter button + refreshes view
       function setFilter(type, el) {
         currentFilter = type;
 
         document
           .querySelectorAll(".pill")
           .forEach((p) => p.classList.remove("active"));
+
         el.classList.add("active");
 
         filterLogs(currentFilter);
       }
 
+      // expands or collapses a log session
       function toggle(el) {
-        const body = el.nextElementSibling; // get the log-body
+        const body = el.nextElementSibling;
         const btn = el.querySelector(".expand-btn");
 
         if (!body) return;
@@ -375,7 +429,7 @@
           : "Expand ⌄";
       }
 
-      /* ---------------- LIVE FILTER ---------------- */
+      // filters logs based on search + status
       function filterLogs(activeStatus = "all") {
         const search = document.getElementById("search").value.toLowerCase();
 
@@ -400,7 +454,6 @@
             if (show) sessionHasVisibleFiles = true;
           });
 
-          // IMPORTANT FIX: only hide session if no files match
           card.style.display = sessionHasVisibleFiles ? "block" : "none";
         });
       }
