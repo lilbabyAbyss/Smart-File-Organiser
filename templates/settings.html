@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Character encoding ensures emojis and symbols render correctly -->
+    <meta charset="UTF-8" />
+
+    <!-- Page title shown in browser tab -->
+    <title>Settings & Preferences</title>
+
+    <!-- Global stylesheet (shared across entire application) -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+
+    <!-- Page-specific settings styling -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='settings.css') }}"
+    />
+  </head>
+
+  <!-- Dark mode is dynamically applied based on user settings -->
+  <body class="{% if settings.toggles.dark_mode %}dark{% endif %}">
+    <!-- ================= NAVBAR ================= -->
+    <!-- Persistent navigation used across all pages for consistency -->
+    <header class="navbar">
+      <div class="logo">Smart File Organiser</div>
+
+      <nav class="nav-links">
+        <!-- Main navigation links -->
+        <a href="/">Home</a>
+        <a href="/help">Help</a>
+        <a href="/logs">Logs</a>
+        <a href="/settings">Settings</a>
+
+        <!-- Session-based authentication UI -->
+        {% if session.get("user") %}
+        <!-- If logged in: show username + logout -->
+        <span class="user-badge">👤 {{ session.get("user") }}</span>
+        <a href="/logout" class="login-btn">Logout</a>
+        {% else %}
+        <!-- If not logged in: show login button -->
+        <a href="/auth?mode=login" class="login-btn">Login</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    <!-- ================= MAIN SETTINGS CONTAINER ================= -->
+    <div class="settings-container">
+      <!-- Header section with title + actions -->
+      <div class="settings-header">
+        <div>
+          <h1>Settings & Preferences</h1>
+          <p class="subtitle">
+            Customize how Smart File Organiser works for you.
+          </p>
+        </div>
+
+        <!-- Action buttons (reset + save form) -->
+        <div class="settings-actions">
+          <button class="reset-btn" type="button" onclick="resetSettings()">
+            Reset
+          </button>
+          <button class="save-btn" form="settingsForm">Save Changes</button>
+        </div>
+      </div>
+
+      <!-- ================= TAB SYSTEM ================= -->
+      <!-- Used to switch between different settings categories -->
+      <div class="tabs">
+        <button class="tab active">Behaviour</button>
+        <button class="tab">Organisation</button>
+        <button class="tab">Appearance</button>
+      </div>
+
+      <!-- ================= SETTINGS FORM ================= -->
+      <!-- All settings are submitted via POST to backend -->
+      <form id="settingsForm" method="POST">
+        <!-- ================= BEHAVIOUR SECTION ================= -->
+        <div class="settings-section">
+          <h2>Behaviour</h2>
+          <p class="section-desc">Control how the organiser behaves.</p>
+
+          <!-- Macro used to generate toggle switches consistently -->
+          {% macro toggle_row(title, desc, name, value=false) %}
+          <div class="setting-row">
+            <!-- Label + description -->
+            <div class="setting-info">
+              <strong>{{ title }}</strong>
+              <p class="setting-desc">{{ desc }}</p>
+            </div>
+
+            <!-- Custom toggle switch UI -->
+            <label class="switch">
+              <input
+                type="checkbox"
+                name="{{ name }}"
+                {%
+                if
+                value
+                %}checked{%
+                endif
+                %}
+              />
+              <span class="slider"></span>
+            </label>
+          </div>
+          {% endmacro %}
+
+          <!-- Behaviour toggles -->
+          {{ toggle_row( "Preview file structure", "Show how files will be
+          organised before processing.", "preview", settings.toggles.preview )
+          }} {{ toggle_row( "Confirm before organising", "Ask before processing
+          files.", "confirm", settings.toggles.confirm ) }}
+
+          <br />
+
+          <!-- Upload limit configuration -->
+          <div class="setting-group">
+            <h2>Upload Limit</h2>
+            <p class="section-desc">
+              Set a limit on the amount of MB allowed for organisation.
+            </p>
+
+            <label>Max upload size (MB):</label>
+
+            <!-- Numeric input restricted between 1–500MB -->
+            <input
+              type="number"
+              name="max_upload_mb"
+              min="1"
+              max="500"
+              value="{{ settings.limits.max_upload_mb }}"
+            />
+          </div>
+        </div>
+
+        <!-- ================= ORGANISATION RULES ================= -->
+        <div class="settings-section hidden">
+          <h2>Organisation Rules</h2>
+          <p class="section-desc">Define how files are sorted into folders.</p>
+
+          <!-- Multi-line rule editor for file categorisation -->
+          <textarea
+            name="rules"
+            class="rules-box"
+            placeholder="Images: .jpg, .png; Documents: .pdf, .txt"
+          >
+{% if settings.rules %}
+{% for folder, exts in settings.rules.items() %}
+{{ folder }}: {{ exts|join(', ') }};
+{% endfor %}
+{% endif %}
+          </textarea>
+        </div>
+
+        <!-- ================= APPEARANCE ================= -->
+        <div class="settings-section hidden">
+          <h2>Appearance</h2>
+          <p class="section-desc">Visual preferences.</p>
+
+          <!-- Dark mode toggle -->
+          {{ toggle_row( "Dark Mode", "Use dark theme.", "dark_mode",
+          settings.toggles.dark_mode ) }}
+        </div>
+      </form>
+
+      <!-- ================= FOOTER ================= -->
+      <footer class="footer">
+        © 2025 Smart File Organiser | Built with Flask & Python
+      </footer>
+    </div>
+
+    <!-- ================= TAB LOGIC (JS) ================= -->
+    <script>
+      // Grab all tab buttons and content sections
+      const tabs = document.querySelectorAll(".tab");
+      const sections = document.querySelectorAll(".settings-section");
+
+      // Switch visible section when a tab is clicked
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => {
+          // Remove active state from all tabs
+          tabs.forEach((t) => t.classList.remove("active"));
+
+          // Activate clicked tab
+          tab.classList.add("active");
+
+          // Hide all sections
+          sections.forEach((s) => s.classList.add("hidden"));
+
+          // Show matching section
+          sections[index].classList.remove("hidden");
+        });
+      });
+
+      // Reset form back to default values
+      function resetSettings() {
+        document.getElementById("settingsForm").reset();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,212 @@
+/* ============================
+   BACKGROUND + LIGHTING
+============================ */
+
+body {
+  background: radial-gradient(circle at 20% 20%, #eceefe, #f5f6f8 60%);
+  background-attachment: fixed;
+}
+
+body.dark {
+  background: radial-gradient(circle at 20% 20%, #1a1a1a, #0f0f0f 60%);
+}
+
+/* Subtle noise texture */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  z-index: -1;
+}
+
+/* ============================
+   PAGE LAYOUT
+============================ */
+
+.page {
+  display: flex;
+  justify-content: center;
+  padding-top: 80px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* ============================
+   AUTH CARD (GLASS EFFECT)
+============================ */
+
+.auth-card {
+  width: 400px;
+  padding: 40px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.75);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.05),
+    0 20px 40px rgba(0, 0, 0, 0.08);
+  animation: cardIn 0.45s ease-out;
+}
+
+body.dark .auth-card {
+  background: rgba(30, 30, 30, 0.75);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.4),
+    0 20px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* Card entrance animation */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================
+   HEADINGS
+============================ */
+
+.auth-card h2 {
+  margin-top: 0;
+  margin-bottom: 28px;
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: -0.4px;
+}
+
+/* ============================
+   FLOATING LABEL INPUTS
+============================ */
+
+.auth-card .input-group {
+  position: relative;
+  margin-top: 20px;
+}
+
+/* INPUT */
+.auth-card input {
+  width: 100%;
+  padding: 18px 12px 10px;
+  border: 1px solid #cfcfcf;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #fafafa;
+  transition: all 0.2s ease;
+}
+
+/* DARK MODE INPUT */
+body.dark .auth-card input {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #eee;
+}
+
+/* FOCUS STATE */
+.auth-card input:focus {
+  border-color: #6a4df5;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(106, 77, 245, 0.15);
+  outline: none;
+}
+
+/* LABEL BASE */
+.auth-card label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #777;
+  pointer-events: none;
+  transition: all 0.18s ease;
+  background: transparent;
+  padding: 0 4px;
+}
+
+/* MOVE LABEL WHEN FOCUSED OR HAS TEXT */
+.auth-card input:focus + label,
+.auth-card input:not(:placeholder-shown) + label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #6a4df5;
+  background: white;
+}
+
+/* DARK MODE LABEL FIX */
+body.dark .auth-card input:focus + label,
+body.dark .auth-card input:not(:placeholder-shown) + label {
+  background: rgba(30, 30, 30, 1);
+  color: #8c6bff;
+}
+
+/* ============================
+   BUTTON
+============================ */
+
+.auth-btn {
+  width: 100%;
+  margin-top: 32px;
+  padding: 14px;
+  background: linear-gradient(135deg, #6a4df5, #8c6bff);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    opacity 0.15s ease;
+}
+
+.auth-btn:hover {
+  opacity: 0.92;
+}
+
+.auth-btn:active {
+  transform: scale(0.97);
+}
+
+/* ============================
+   FOOTER TEXT
+============================ */
+
+.switch-text {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.switch-text a {
+  color: #6a4df5;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.switch-text a:hover {
+  text-decoration: underline;
+}
+
+/* ============================
+   ENCRYPTION NOTE
+============================ */
+
+.encryption-note {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #777;
+  text-align: center;
+}
+
+body.dark .encryption-note {
+  color: #aaa;
+}
