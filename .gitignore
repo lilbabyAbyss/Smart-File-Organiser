@@ -1,9 +1,5 @@
 users.json
 logs.json
 settings.json
-__pycache__/
-*.pyc
-.env
 static/
 templates/
-__pycache__/
